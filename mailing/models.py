@@ -22,6 +22,8 @@ class Message(models.Model):
     subject = models.CharField(max_length=150, verbose_name='тема письма')
     message = models.TextField(verbose_name='сообщение')
 
+    image = models.ImageField(upload_to='mailing_images/', **NULLABLE, verbose_name='картинка')
+
     def __str__(self):
         return self.subject
 
