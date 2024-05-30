@@ -39,8 +39,17 @@ class Mailing(models.Model):
         COMPLETED: 'завершена',
         STARTED: 'запущена',
     }
+
+    DAILY = 'daily'
+    WEEKLY = 'weekly'
+    MONTHLY = 'monthly'
+    REGULARITY_VARIANTS = {
+        DAILY: 'раз в день',
+        WEEKLY: 'раз в неделю',
+        MONTHLY: 'раз в месяц',
+    }
     mail_time = models.DateTimeField(verbose_name='дата и время рассылки')
-    regularity = models.DurationField(verbose_name='переодичность')
+    regularity = models.CharField(max_length=50, choices=REGULARITY_VARIANTS, verbose_name='периодичность')
 
     status = models.CharField(max_length=50, choices=STATUS_VARIANTS, default=CREATED, verbose_name='статус рассылки')
 
