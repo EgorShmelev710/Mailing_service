@@ -9,11 +9,6 @@ from mailing.models import Mailing, Client, Message
 class MailingListView(ListView):
     model = Mailing
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        print(queryset.values())
-        return queryset
-
 
 class MailingDetailView(DetailView):
     model = Mailing

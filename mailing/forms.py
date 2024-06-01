@@ -19,7 +19,7 @@ class ClientForm(StyleFormMixin, forms.ModelForm):
 class MailingForm(StyleFormMixin, forms.ModelForm):
     class Meta:
         model = Mailing
-        fields = '__all__'
+        exclude = ('next_send_time',)
 
 
 class MessageForm(StyleFormMixin, forms.ModelForm):

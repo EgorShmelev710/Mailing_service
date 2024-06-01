@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 NULLABLE = {'blank': True, 'null': True}
 
@@ -50,13 +51,20 @@ class Mailing(models.Model):
         WEEKLY: 'раз в неделю',
         MONTHLY: 'раз в месяц',
     }
-    mail_time = models.DateTimeField(verbose_name='дата и время рассылки')
+    start_time = models.DateTimeField(verbose_name='дата и время рассылки')
     regularity = models.CharField(max_length=50, choices=REGULARITY_VARIANTS, verbose_name='периодичность')
 
     status = models.CharField(max_length=50, choices=STATUS_VARIANTS, default=CREATED, verbose_name='статус рассылки')
 
     message = models.ForeignKey(Message, on_delete=models.CASCADE, verbose_name='сообщение')
     client = models.ManyToManyField(Client, verbose_name='клиент')
+
+    next_send_time = models.DateTimeField(default=timezone.now)
+
+    def save(self, *args, **kwargs):
+        if not self.next_send_time:
+            self.next_send_time = self.start_time
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.status
