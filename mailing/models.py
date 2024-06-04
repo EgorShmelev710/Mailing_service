@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils import timezone
 
+from users.models import User
+
 NULLABLE = {'blank': True, 'null': True}
 
 
@@ -10,6 +12,8 @@ class Client(models.Model):
     surname = models.CharField(max_length=150, verbose_name='Фамилия')
     patronymic = models.CharField(max_length=150, verbose_name='Отчество')
     comment = models.TextField(verbose_name='комментарий')
+
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='пользователь', **NULLABLE)
 
     def __str__(self):
         return f'{self.surname} {self.name}'
@@ -25,6 +29,8 @@ class Message(models.Model):
 
     image = models.ImageField(upload_to='mailing_images/', **NULLABLE, verbose_name='картинка')
 
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='пользователь', **NULLABLE)
+
     def __str__(self):
         return self.subject
 
@@ -37,20 +43,20 @@ class Mailing(models.Model):
     CREATED = 'created'
     COMPLETED = 'completed'
     STARTED = 'started'
-    STATUS_VARIANTS = {
-        CREATED: 'создана',
-        COMPLETED: 'завершена',
-        STARTED: 'запущена',
-    }
+    STATUS_VARIANTS = [
+        (CREATED, 'создана'),
+        (COMPLETED, 'завершена'),
+        (STARTED, 'запущена'),
+    ]
 
     DAILY = 'daily'
     WEEKLY = 'weekly'
     MONTHLY = 'monthly'
-    REGULARITY_VARIANTS = {
-        DAILY: 'раз в день',
-        WEEKLY: 'раз в неделю',
-        MONTHLY: 'раз в месяц',
-    }
+    REGULARITY_VARIANTS = [
+        (DAILY, 'раз в день'),
+        (WEEKLY, 'раз в неделю'),
+        (MONTHLY, 'раз в месяц'),
+    ]
     start_time = models.DateTimeField(verbose_name='дата и время рассылки')
     regularity = models.CharField(max_length=50, choices=REGULARITY_VARIANTS, verbose_name='периодичность')
 
@@ -60,6 +66,8 @@ class Mailing(models.Model):
     client = models.ManyToManyField(Client, verbose_name='клиент')
 
     next_send_time = models.DateTimeField()
+
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='пользователь', **NULLABLE)
 
     def save(self, *args, **kwargs):
         if not self.next_send_time:
@@ -77,10 +85,10 @@ class Mailing(models.Model):
 class MailingAttempts(models.Model):
     SUCCESS = 'successful'
     FAIL = 'failed'
-    STATUS_VARIANTS = {
-        SUCCESS: 'успешно',
-        FAIL: 'неуспешно',
-    }
+    STATUS_VARIANTS = [
+        (SUCCESS, 'успешно'),
+        (FAIL, 'неуспешно'),
+    ]
 
     last_attempt_time = models.DateTimeField(verbose_name='дата и время последней попытки')
     status = models.CharField(max_length=50, choices=STATUS_VARIANTS, verbose_name='статус рассылки')

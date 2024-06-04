@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
@@ -20,10 +21,17 @@ class MailingUpdateView(UpdateView):
     success_url = reverse_lazy('mailing:home')
 
 
-class MailingCreateView(CreateView):
+class MailingCreateView(LoginRequiredMixin, CreateView):
     model = Mailing
     form_class = MailingForm
     success_url = reverse_lazy('mailing:home')
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        user = self.request.user
+        self.object.owner = user
+
+        return super().form_valid(form)
 
 
 class MailingDeleteView(DeleteView):
@@ -39,10 +47,17 @@ class ClientDetailView(DetailView):
     model = Client
 
 
-class ClientCreateView(CreateView):
+class ClientCreateView(LoginRequiredMixin, CreateView):
     model = Client
     form_class = ClientForm
     success_url = reverse_lazy('mailing:home')
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        user = self.request.user
+        self.object.owner = user
+
+        return super().form_valid(form)
 
 
 class ClientUpdateView(UpdateView):
@@ -64,10 +79,17 @@ class MessageDetailView(DetailView):
     model = Message
 
 
-class MessageCreateView(CreateView):
+class MessageCreateView(LoginRequiredMixin, CreateView):
     model = Message
     form_class = MessageForm
     success_url = reverse_lazy('mailing:messages')
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        user = self.request.user
+        self.object.owner = user
+
+        return super().form_valid(form)
 
 
 class MessageUpdateView(UpdateView):
