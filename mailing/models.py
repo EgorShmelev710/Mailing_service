@@ -59,7 +59,7 @@ class Mailing(models.Model):
     message = models.ForeignKey(Message, on_delete=models.CASCADE, verbose_name='сообщение')
     client = models.ManyToManyField(Client, verbose_name='клиент')
 
-    next_send_time = models.DateTimeField(default=timezone.now)
+    next_send_time = models.DateTimeField()
 
     def save(self, *args, **kwargs):
         if not self.next_send_time:
@@ -67,7 +67,7 @@ class Mailing(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.status
+        return self.message.subject
 
     class Meta:
         verbose_name = 'рассылка'
