@@ -1,10 +1,12 @@
 import secrets
 
 from django.conf import settings
+from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
-from django.views.generic import CreateView, UpdateView
+from django.views.generic import CreateView, UpdateView, ListView, DetailView
 
 from users.forms import UserRegisterForm, UserProfileForm
 from users.models import User
@@ -47,3 +49,31 @@ class ProfileView(UpdateView):
 
     def get_object(self, queryset=None):
         return self.request.user
+
+
+class UserListView(PermissionRequiredMixin, ListView):
+    model = User
+    permission_required = 'users.view_all_users'
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_superuser:
+            queryset = super().get_queryset().exclude(pk=user.pk)
+        else:
+            queryset = super().get_queryset().exclude(pk=user.pk).exclude(is_superuser=True).exclude(is_staff=True)
+        return queryset
+
+
+@permission_required('users.deactivate_user')
+def toggle_activity(request, pk):
+    user = User.objects.get(pk=pk)
+    if user.is_active:
+        user.is_active = False
+    else:
+        user.is_active = True
+    user.save()
+    return redirect(reverse('users:view_all_users'))
+
+
+class UserDetailView(DetailView):
+    model = User

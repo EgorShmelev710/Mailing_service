@@ -13,7 +13,8 @@ def send_mailing():
     zone = pytz.timezone(settings.TIME_ZONE)
     current_datetime = datetime.now(zone)
     print(f'локальное время: {current_datetime}\nзона: {zone}')
-    mailings = Mailing.objects.filter(next_send_time__lte=current_datetime)
+    mailings = Mailing.objects.filter(next_send_time__lte=current_datetime,
+                                      status__in=[Mailing.STARTED, Mailing.CREATED])
     print(f'Количество рассылок для отправки: {mailings.count()}')
 
     for mailing in mailings:

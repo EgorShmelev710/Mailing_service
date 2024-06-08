@@ -4,15 +4,22 @@
 {% block content %}
 <section class="jumbotron text-center">
     <div class="container">
+        {% if user.is_staff %}
+        <h1 class="jumbotron-heading">Рассылки</h1>
+        <p class="lead text-muted">На этой странице отображены все рассылки!</p>
+        {% else %}
         <h1 class="jumbotron-heading">Ваши Рассылки</h1>
-        <p class="lead text-muted">На этой странице отображены все ваши клиенты!</p>
+        <p class="lead text-muted">На этой странице отображены все ваши рассылки!</p>
+        {% endif %}
     </div>
 </section>
 <div class="album py-5 bg-light">
     <div class="container">
+        {% if not user.is_staff %}
         <div class="col-12 mb-5">
             <a class="btn btn-outline-primary" href="{% url 'mailing:create_mailing' %}">Добавить рассылку</a>
         </div>
+        {% endif %}
         <div class="row">
             {% for object in object_list %}
             <div class="col-md-4">
