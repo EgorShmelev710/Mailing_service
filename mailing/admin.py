@@ -9,15 +9,15 @@ class ClientAdmin(admin.ModelAdmin):
 
 
 @admin.register(Mailing)
-class ClientAdmin(admin.ModelAdmin):
+class MailingAdmin(admin.ModelAdmin):
     list_display = ('message', 'regularity', 'status')
 
 
 @admin.register(Message)
-class ClientAdmin(admin.ModelAdmin):
+class MessageAdmin(admin.ModelAdmin):
     list_display = ('subject',)
 
 
 @admin.register(MailingAttempts)
-class ClientAdmin(admin.ModelAdmin):
+class MailingAttemptsAdmin(admin.ModelAdmin):
     list_display = ('mailing',)
